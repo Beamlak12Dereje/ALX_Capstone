@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Task List{% endblock %}
+{% block content %}
+    <h2>Your Tasks</h2>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <a href="{% url 'task_create' %}" class="btn btn-success mb-3">Add Task</a>
+    <form method="get" class="mb-3">
+        <select name="status" class="form-select d-inline-block w-auto">
+            <option value="">All</option>
+            <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completed</option>
+            <option value="incomplete" {% if request.GET.status == 'incomplete' %}selected{% endif %}>Incomplete</option>
+        </select>
+        <input type="date" name="date" value="{{ request.GET.date }}" class="form-control d-inline-block w-auto">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.title }}</td>
+                    <td>{{ task.description|default:"None" }}</td>
+                    <td>{{ task.due_date|default:"None" }}</td>
+                    <td>{% if task.is_completed %}Completed{% else %}Incomplete{% endif %}</td>
+                    <td>
+                        <form method="post" action="{% url 'task_toggle' task.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-info">Toggle</button>
+                        </form>
+                        <a href="{% url 'task_edit' task.id %}" class="btn btn-sm btn-warning">Edit</a>
+                        <form method="post" action="{% url 'task_delete' task.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5">No tasks yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
