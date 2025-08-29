@@ -1,4 +1,4 @@
-# ALX_Capstone
+# Task Manager Django Project
 Capstone Project Part 1: Planning Document
 Project Title:- Simple Personal Task Manager
 Project Idea:
